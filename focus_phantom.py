@@ -3,6 +3,11 @@ from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from webdriver_manager.chrome import ChromeDriverManager
 import time
+import pygame
+
+#--------------------------
+# Inicializamos el modulo de sonido de pygame antes de usarlo
+pygame.mixer.init()
 #--------------------------
 
 # Parte del usuario, introduce URL que quiere y driver abre la pagina, luego inyectamos el JS 
@@ -32,13 +37,24 @@ window.addEventListener('blur', function(e) {e.stopImmediatePropagation(); }, tr
 # - si pausado es True significa que algo interrumpio el video
 # Ctrl+C para cerrar limpiamente
 
+# ya_avisado evita que la alarma suene en bucle mientras el video siga pausado
+# se inicializa fuera del bucle para que no se resetee cada 3 segundos
+ya_avisado = False
+
 try:
     while True:
         driver.execute_script(js)
         try:
             pausado = driver.execute_script("return document.querySelector('video').paused")
-            if pausado:
+            if pausado and not ya_avisado:
+                # Solo suena una vez — cuando ya_avisado es False y el video esta pausado
                 print("⚠️ El video está pausado!")
+                pygame.mixer.Sound('alert.wav').play()
+                ya_avisado = True  # Marcamos que ya avisamos para no repetir
+            elif not pausado:
+                # El video se reanudo — reseteamos ya_avisado y paramos el sonido
+                ya_avisado = False  
+                pygame.mixer.stop()  # Detenemos la alarma si el video se reanuda
         except:
             pass  # No hay video en la pagina todavia, ignoramos
         time.sleep(3)
