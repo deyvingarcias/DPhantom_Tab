@@ -57,7 +57,7 @@ try:
                 pygame.mixer.stop()  # Detenemos la alarma si el video se reanuda
         except:
             pass  # No hay video en la pagina todavia, ignoramos
-        time.sleep(3)
+        time.sleep(2)
 except KeyboardInterrupt:
     print("Terminando el programa...")
     driver.quit()
