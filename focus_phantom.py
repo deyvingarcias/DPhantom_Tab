@@ -35,12 +35,13 @@ window.addEventListener('blur', function(e) {e.stopImmediatePropagation(); }, tr
 try:
     while True:
         driver.execute_script(js)
-        # Preguntamos a la pagina si el video esta pausado, guardamos True o False en pausado
-        pausado = driver.execute_script("return document.querySelector('video').paused")
-        # Si pausado es True, avisamos en la terminal
-        if pausado:
-            print("⚠️ El video está pausado!")
-        time.sleep(3)  # Ejecuta el script cada 3 segundos para mantener la ilusión
+        try:
+            pausado = driver.execute_script("return document.querySelector('video').paused")
+            if pausado:
+                print("⚠️ El video está pausado!")
+        except:
+            pass  # No hay video en la pagina todavia, ignoramos
+        time.sleep(3)
 except KeyboardInterrupt:
     print("Terminando el programa...")
     driver.quit()
